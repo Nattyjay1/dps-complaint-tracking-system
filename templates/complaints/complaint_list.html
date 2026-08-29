@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Complaint List | DPS Complaint Tracking{% endblock %}
+{% block page_heading %}Complaint List{% endblock %}
+
+{% block content %}
+<div class="card page-card mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-lg-4">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="Complaint ID or citizen name">
+            </div>
+            <div class="col-md-6 col-lg-2">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">All statuses</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label for="complaint_type" class="form-label">Complaint Type</label>
+                <select class="form-select" id="complaint_type" name="complaint_type">
+                    <option value="">All types</option>
+                    {% for value, label in complaint_type_choices %}
+                        <option value="{{ value }}" {% if selected_complaint_type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6 col-lg-2">
+                <label for="priority" class="form-label">Priority</label>
+                <select class="form-select" id="priority" name="priority">
+                    <option value="">All priorities</option>
+                    {% for value, label in priority_choices %}
+                        <option value="{{ value }}" {% if selected_priority == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6 col-lg-1 d-flex gap-2">
+                <button type="submit" class="btn btn-dark flex-fill">Filter</button>
+            </div>
+            <div class="col-12">
+                <a href="{% url 'complaint_list' %}" class="btn btn-outline-dark btn-sm">Reset Filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card page-card">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">All Complaints</h2>
+        <a href="{% url 'complaint_create' %}" class="btn btn-dark btn-sm">Log New</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Complaint ID</th>
+                    <th>Citizen Name</th>
+                    <th>Complaint Type</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>SLA Status</th>
+                    <th>Date Filed</th>
+                    <th>Target Resolution Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for complaint in complaints %}
+                    <tr>
+                        <td class="fw-semibold">{{ complaint.complaint_id }}</td>
+                        <td>{{ complaint.citizen_name }}</td>
+                        <td>{{ complaint.complaint_type }}</td>
+                        <td>
+                            <span class="badge">
+                                {{ complaint.priority_assignment }}
+                            </span>
+                        </td>
+                        <td>{{ complaint.status.status_name }}</td>
+                        <td><span class="badge">{{ complaint.sla_status }}</span></td>
+                        <td>{{ complaint.date_filed|date:"M d, Y h:i A" }}</td>
+                        <td>{{ complaint.target_resolution_date|date:"M d, Y"|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'complaint_detail' complaint.complaint_id %}" class="btn btn-outline-dark btn-sm">View</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted py-4">No complaints match your search or filters.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

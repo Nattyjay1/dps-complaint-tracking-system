@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Resolved Complaints Report | DPS Complaint Tracking{% endblock %}
+{% block page_heading %}Resolved Complaints Report{% endblock %}
+
+{% block content %}
+<div class="card page-card screen-only">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">Resolved Complaints</h2>
+        <button type="button" class="btn btn-outline-dark btn-sm no-print" onclick="window.print()">Print</button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Complaint ID</th>
+                    <th>Citizen Name</th>
+                    <th>Citizen Contact</th>
+                    <th>Complaint Type</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>SLA Status</th>
+                    <th>Date Filed</th>
+                    <th>Target Resolution Date</th>
+                    <th>Location</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for complaint in complaints %}
+                    <tr>
+                        <td><a href="{% url 'complaint_detail' complaint.complaint_id %}">{{ complaint.complaint_id }}</a></td>
+                        <td>{{ complaint.citizen_name }}</td>
+                        <td>{{ complaint.citizen_contact }}</td>
+                        <td>{{ complaint.complaint_type }}</td>
+                        <td>{{ complaint.priority_assignment }}</td>
+                        <td>{{ complaint.status.status_name }}</td>
+                        <td>{{ complaint.sla_status }}</td>
+                        <td>{{ complaint.date_filed|date:"M d, Y h:i A" }}</td>
+                        <td>{{ complaint.target_resolution_date|date:"M d, Y"|default:"-" }}</td>
+                        <td>{{ complaint.location }}</td>
+                        <td>{{ complaint.description }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="11" class="text-center text-muted py-4">No resolved complaints yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="print-only">
+    <div class="print-report-header">
+        <h1>Resolved Complaints Report</h1>
+        <p>Department of Public Services - Complaint Tracking System</p>
+        <p>Printed by: {{ request.user.username }} | Date: {% now "M d, Y h:i A" %}</p>
+    </div>
+
+    {% for complaint in complaints %}
+        <section class="print-record">
+            <h2>{{ complaint.complaint_id }}</h2>
+            <table class="print-detail-table">
+                <tbody>
+                    <tr>
+                        <th>Citizen Name</th>
+                        <td>{{ complaint.citizen_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Citizen Contact</th>
+                        <td>{{ complaint.citizen_contact }}</td>
+                    </tr>
+                    <tr>
+                        <th>Complaint Type</th>
+                        <td>{{ complaint.complaint_type }}</td>
+                    </tr>
+                    <tr>
+                        <th>Priority</th>
+                        <td>{{ complaint.priority_assignment }}</td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>{{ complaint.status.status_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>SLA Status</th>
+                        <td>{{ complaint.sla_status }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date Filed</th>
+                        <td>{{ complaint.date_filed|date:"M d, Y h:i A" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Target Resolution Date</th>
+                        <td>{{ complaint.target_resolution_date|date:"M d, Y"|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Location</th>
+                        <td>{{ complaint.location }}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{ complaint.description|linebreaksbr }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    {% empty %}
+        <p>No resolved complaints yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

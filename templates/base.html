@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}DPS Complaint Tracking{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #fff;
+            color: #111;
+        }
+        .app-shell {
+            min-height: 100vh;
+            display: flex;
+        }
+        .sidebar {
+            width: 260px;
+            background: #111;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .sidebar a {
+            color: rgba(255, 255, 255, .82);
+            text-decoration: none;
+        }
+        .sidebar .nav-link {
+            border-radius: .45rem;
+            padding: .7rem .85rem;
+            margin-bottom: .25rem;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: #fff;
+            color: #111;
+        }
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+        .content a:not(.btn) {
+            color: #111;
+        }
+        .topbar {
+            background: #fff;
+            border-bottom: 1px solid #111;
+        }
+        .page-card,
+        .stat-card {
+            border: 1px solid #111;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .card-header,
+        .table-light th {
+            background: #f8f8f8 !important;
+            color: #111;
+        }
+        .btn,
+        .form-control,
+        .form-select {
+            border-radius: 0;
+        }
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #111;
+            box-shadow: 0 0 0 .15rem rgba(0, 0, 0, .12);
+        }
+        .badge {
+            background: #fff !important;
+            color: #111 !important;
+            border: 1px solid #111;
+            border-radius: 0;
+        }
+        .alert {
+            background: #fff;
+            color: #111;
+            border: 1px solid #111;
+            border-radius: 0;
+        }
+        .table th {
+            white-space: nowrap;
+        }
+        .print-only {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .app-shell {
+                display: block;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            .sidebar .nav {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: .25rem;
+            }
+        }
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 12mm;
+            }
+            html,
+            body {
+                background: #fff !important;
+                color: #000 !important;
+                font-size: 11pt;
+            }
+            .sidebar,
+            .topbar,
+            .alert,
+            .no-print,
+            .screen-only {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .app-shell {
+                display: block;
+                min-height: auto;
+            }
+            .content {
+                display: block;
+                width: 100%;
+            }
+            .p-4 {
+                padding: 0 !important;
+            }
+            .page-card,
+            .stat-card {
+                border: 0 !important;
+                box-shadow: none !important;
+            }
+            .table-responsive {
+                overflow: visible !important;
+            }
+            a {
+                color: #000 !important;
+                text-decoration: none !important;
+            }
+            .print-report-header {
+                border-bottom: 2px solid #000;
+                margin-bottom: 14px;
+                padding-bottom: 8px;
+            }
+            .print-report-header h1 {
+                font-size: 18pt;
+                margin: 0 0 4px;
+            }
+            .print-report-header p {
+                margin: 0;
+            }
+            .print-record {
+                border: 1px solid #000;
+                margin-bottom: 10px;
+                padding: 8px;
+                page-break-inside: avoid;
+            }
+            .print-record h2 {
+                border-bottom: 1px solid #000;
+                font-size: 13pt;
+                margin: 0 0 6px;
+                padding-bottom: 4px;
+            }
+            .print-detail-table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            .print-detail-table th,
+            .print-detail-table td {
+                border: 1px solid #000;
+                padding: 5px;
+                text-align: left;
+                vertical-align: top;
+                word-break: break-word;
+            }
+            .print-detail-table th {
+                background: #f2f2f2 !important;
+                width: 30%;
+            }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar p-3">
+            <div class="mb-4">
+                <div class="fw-bold fs-5">DPS Tracking</div>
+                <div class="small text-white-50">Public Services Desk</div>
+            </div>
+            {% with current=request.resolver_match.url_name %}
+            <nav class="nav flex-column">
+                <a class="nav-link {% if current == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
+                <a class="nav-link {% if current == 'complaint_create' %}active{% endif %}" href="{% url 'complaint_create' %}">Log New Complaint</a>
+                <a class="nav-link {% if current == 'complaint_list' or current == 'complaint_detail' %}active{% endif %}" href="{% url 'complaint_list' %}">Complaint List</a>
+                <a class="nav-link {% if current == 'resolved_report' %}active{% endif %}" href="{% url 'resolved_report' %}">Resolved Report</a>
+            </nav>
+            {% endwith %}
+        </aside>
+
+        <main class="content">
+            <div class="topbar px-4 py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-semibold">{% block page_heading %}Complaint Tracking System{% endblock %}</div>
+                    <div class="small text-muted">Logged in as {{ request.user.username }}</div>
+                </div>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-dark btn-sm">Logout</button>
+                </form>
+            </div>
+
+            <div class="p-4">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll(".alert").forEach((alertBox) => {
+            setTimeout(() => {
+                const alert = bootstrap.Alert.getOrCreateInstance(alertBox);
+                alert.close();
+            }, 6000);
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Complaint Detail | DPS Complaint Tracking{% endblock %}
+{% block page_heading %}Complaint Detail{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-8 order-1">
+        <div class="card page-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">{{ complaint.complaint_id }}</h2>
+                <span class="badge">
+                    {{ complaint.priority_assignment }} Priority
+                </span>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Citizen Name</dt>
+                    <dd class="col-sm-8">{{ complaint.citizen_name }}</dd>
+
+                    <dt class="col-sm-4">Citizen Contact</dt>
+                    <dd class="col-sm-8">{{ complaint.citizen_contact }}</dd>
+
+                    <dt class="col-sm-4">Complaint Type</dt>
+                    <dd class="col-sm-8">{{ complaint.complaint_type }}</dd>
+
+                    <dt class="col-sm-4">Location</dt>
+                    <dd class="col-sm-8">{{ complaint.location }}</dd>
+
+                    <dt class="col-sm-4">Status</dt>
+                    <dd class="col-sm-8">{{ complaint.status.status_name }}</dd>
+
+                    <dt class="col-sm-4">SLA Status</dt>
+                    <dd class="col-sm-8"><span class="badge">{{ complaint.sla_status }}</span></dd>
+
+                    <dt class="col-sm-4">SLA Days</dt>
+                    <dd class="col-sm-8">{{ complaint.sla_days }} working day{{ complaint.sla_days|pluralize }}</dd>
+
+                    <dt class="col-sm-4">Investigative</dt>
+                    <dd class="col-sm-8">{{ complaint.is_investigative|yesno:"Yes,No" }}</dd>
+
+                    <dt class="col-sm-4">Date Filed</dt>
+                    <dd class="col-sm-8">{{ complaint.date_filed|date:"M d, Y h:i A" }}</dd>
+
+                    <dt class="col-sm-4">Target Resolution Date</dt>
+                    <dd class="col-sm-8">{{ complaint.target_resolution_date|date:"M d, Y"|default:"-" }}</dd>
+
+                    <dt class="col-sm-4">Last Updated</dt>
+                    <dd class="col-sm-8">{{ complaint.updated_at|date:"M d, Y h:i A" }}</dd>
+
+                    <dt class="col-sm-4">Description</dt>
+                    <dd class="col-sm-8">{{ complaint.description|linebreaksbr }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8 order-3">
+        <div class="card page-card">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Status History</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Old Status</th>
+                            <th>New Status</th>
+                            <th>Reason</th>
+                            <th>Changed By</th>
+                            <th>Changed At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in complaint.status_logs.all %}
+                            <tr>
+                                <td>{{ log.old_status.status_name }}</td>
+                                <td>{{ log.new_status.status_name }}</td>
+                                <td>{{ log.change_reason }}</td>
+                                <td>{{ log.administrator|default:"System" }}</td>
+                                <td>{{ log.changed_at|date:"M d, Y h:i A" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">No status updates yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 order-2">
+        <div class="card page-card">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Update Status</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.new_status.id_for_label }}" class="form-label">New Status</label>
+                        {{ form.new_status }}
+                        {% for error in form.new_status.errors %}
+                            <div class="text-dark small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.change_reason.id_for_label }}" class="form-label">Change Reason</label>
+                        {{ form.change_reason }}
+                        {% for error in form.change_reason.errors %}
+                            <div class="text-dark small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100">Save Status</button>
+                </form>
+                <a href="{% url 'complaint_list' %}" class="btn btn-outline-dark w-100 mt-2">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

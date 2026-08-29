@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login | DPS Complaint Tracking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            background: #fff;
+            color: #111;
+            display: grid;
+            place-items: center;
+        }
+        .login-card {
+            width: min(420px, calc(100vw - 2rem));
+            border: 1px solid #111;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .login-card input {
+            display: block;
+            width: 100%;
+            padding: .625rem .75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0;
+        }
+        .btn {
+            border-radius: 0;
+        }
+        .alert {
+            background: #fff;
+            color: #111;
+            border: 1px solid #111;
+            border-radius: 0;
+        }
+        .text-dark {
+            color: #111 !important;
+        }
+        input:focus {
+            border-color: #111;
+            box-shadow: 0 0 0 .15rem rgba(0, 0, 0, .12);
+            outline: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="card login-card">
+        <div class="card-body p-4">
+            <div class="mb-4 text-center">
+                <h1 class="h4 mb-1">DPS Complaint Tracking</h1>
+                <p class="text-muted mb-0">Administrator Login</p>
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-light">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+                <div class="mb-3">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                    {{ form.username }}
+                    {% for error in form.username.errors %}
+                        <div class="text-dark small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                    {{ form.password }}
+                    {% for error in form.password.errors %}
+                        <div class="text-dark small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-dark w-100">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | DPS Complaint Tracking{% endblock %}
+{% block page_heading %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="text-muted small">Total Complaints</div>
+                <div class="fs-3 fw-bold">{{ total_complaints }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="text-muted small">Received</div>
+                <div class="fs-3 fw-bold text-dark">{{ total_received }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="text-muted small">In Progress</div>
+                <div class="fs-3 fw-bold text-dark">{{ total_in_progress }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl">
+        <a href="{% url 'resolved_report' %}" class="text-decoration-none">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="text-muted small">Resolved</div>
+                <div class="fs-3 fw-bold text-dark">{{ total_resolved }}</div>
+                <div class="small text-muted">Open report</div>
+            </div>
+        </div>
+        </a>
+    </div>
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="text-muted small">High Priority</div>
+                <div class="fs-3 fw-bold text-dark">{{ high_priority_count }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="text-muted small">Within SLA</div>
+                <div class="fs-3 fw-bold text-dark">{{ within_sla_count }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="text-muted small">Due Today</div>
+                <div class="fs-3 fw-bold text-dark">{{ due_today_count }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="text-muted small">Overdue</div>
+                <div class="fs-3 fw-bold text-dark">{{ overdue_count }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card page-card">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">Recent Complaints</h2>
+        <a href="{% url 'complaint_create' %}" class="btn btn-dark btn-sm">Log Complaint</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Complaint ID</th>
+                    <th>Citizen Name</th>
+                    <th>Type</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>SLA Status</th>
+                    <th>Date Filed</th>
+                    <th>Target Resolution</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for complaint in recent_complaints %}
+                    <tr>
+                        <td><a href="{% url 'complaint_detail' complaint.complaint_id %}">{{ complaint.complaint_id }}</a></td>
+                        <td>{{ complaint.citizen_name }}</td>
+                        <td>{{ complaint.complaint_type }}</td>
+                        <td>{{ complaint.priority_assignment }}</td>
+                        <td>{{ complaint.status.status_name }}</td>
+                        <td><span class="badge">{{ complaint.sla_status }}</span></td>
+                        <td>{{ complaint.date_filed|date:"M d, Y h:i A" }}</td>
+                        <td>{{ complaint.target_resolution_date|date:"M d, Y"|default:"-" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">No complaints have been logged yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
